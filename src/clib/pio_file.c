@@ -136,6 +136,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
     GPTLstart("PIO:PIOc_createfile");
 
 #ifdef _ADIOS2 /* TAHSIN: timing */
+    *iotype = PIO_IOTYPE_ADIOS;
     if (*iotype == PIO_IOTYPE_ADIOS)
         GPTLstart("PIO:PIOc_createfile_adios"); /* TAHSIN: start */
 #endif
@@ -180,6 +181,70 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
 
 #ifdef TIMING
     GPTLstop("PIO:PIOc_createfile");
+
+#ifdef _ADIOS2 /* TAHSIN: timing */
+    if (*iotype == PIO_IOTYPE_ADIOS)
+        GPTLstop("PIO:PIOc_createfile_adios"); /* TAHSIN: stop */
+#endif
+#endif
+
+    return ret;
+}
+
+int PIOc_createfile_orig(int iosysid, int *ncidp, int *iotype, const char *filename,
+                         int mode)
+{
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    int ret;               /* Return code from function calls. */
+
+#ifdef TIMING
+    GPTLstart("PIO:PIOc_createfile_orig");
+
+#ifdef _ADIOS2 /* TAHSIN: timing */
+    if (*iotype == PIO_IOTYPE_ADIOS)
+        GPTLstart("PIO:PIOc_createfile_adios"); /* TAHSIN: start */
+#endif
+#endif
+
+    /* Get the IO system info from the id. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+    {
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__,
+                        "Unable to create file (%s, mode = %d, iotype=%s). Invalid arguments provided, invalid iosystem id (iosysid = %d)", (filename) ? filename : "NULL", mode, (!iotype) ? "UNKNOWN" : pio_iotype_to_string(*iotype), iosysid);
+    }
+
+    /* Create the file. */
+    if ((ret = PIOc_createfile_int(iosysid, ncidp, iotype, filename, mode)))
+    {
+#ifdef TIMING
+        GPTLstop("PIO:PIOc_createfile_orig");
+
+#ifdef _ADIOS2 /* TAHSIN: timing */
+        if (*iotype == PIO_IOTYPE_ADIOS)
+            GPTLstop("PIO:PIOc_createfile_adios"); /* TAHSIN: stop */
+#endif
+#endif
+
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__,
+                        "Unable to create file (%s, mode = %d, iotype=%s) on iosystem (iosystem id = %d). Internal error creating the file", (filename) ? filename : "NULL", mode, (!iotype) ? "UNKNOWN" : pio_iotype_to_string(*iotype), iosysid);
+    }
+
+    /* Run this on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. (Because otherwise, in async
+     * mode, set_fill would be called twice by each IO task, since
+     * PIOc_createfile() will already be called on each IO task.) */
+    if (!ios->async || !ios->ioproc)
+    {
+        /* Set the fill mode to NOFILL. */
+        if ((ret = PIOc_set_fill(*ncidp, NC_NOFILL, NULL)))
+        {
+            return pio_err(ios, NULL, ret, __FILE__, __LINE__,
+                            "Unable to create file (%s, mode = %d, iotype=%s) on iosystem (iosystem id = %d). Setting fill mode to NOFILL failed.", (filename) ? filename : "NULL", mode, (!iotype) ? "UNKNOWN" : pio_iotype_to_string(*iotype), iosysid);
+        }
+    }
+
+#ifdef TIMING
+    GPTLstop("PIO:PIOc_createfile_orig");
 
 #ifdef _ADIOS2 /* TAHSIN: timing */
     if (*iotype == PIO_IOTYPE_ADIOS)

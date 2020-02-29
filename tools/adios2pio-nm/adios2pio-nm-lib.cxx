@@ -2114,7 +2114,7 @@ int ConvertBPFile(const string &infilepath, const string &outfilename,
             Use NC_64BIT_DATA instead of PIO_64BIT_OFFSET. Some output files will have variables
             that require more than 4GB storage.
         */
-        ret = PIOc_createfile(iosysid, &ncid, &pio_iotype, outfilename.c_str(), NC_64BIT_DATA);
+        ret = PIOc_createfile_orig(iosysid, &ncid, &pio_iotype, outfilename.c_str(), NC_64BIT_DATA);
         if (ret != PIO_NOERR)
             ierr = BP2PIO_ERROR;
         ERROR_CHECK_THROW(ierr, err_val, err_cnt, comm, "Could not create output file.");

@@ -22,7 +22,7 @@
 #endif
 
 /* 10MB default limit. */
-PIO_Offset pio_buffer_size_limit = 10485760;
+PIO_Offset pio_buffer_size_limit = 134217728;
 
 /* Maximum buffer usage. */
 PIO_Offset maxusage = 0;

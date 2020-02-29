@@ -29,8 +29,8 @@ option (PIO_MICRO_TIMING     "Enable internal micro timers"                 OFF)
 option (PIO_SAVE_DECOMPS     "Dump the decomposition information"           OFF)
 option (WITH_PNETCDF         "Require the use of PnetCDF"                   ON)
 option (WITH_NETCDF          "Require the use of NetCDF"                    ON)
-option (WITH_ADIOS2          "Require the use of ADIOS 2.x"                 OFF)
-option (ADIOS_BP2NC_TEST     "Enable testing of BP to NetCDF conversion"    OFF)
+option (WITH_ADIOS2          "Require the use of ADIOS 2.x"                 ON)
+option (ADIOS_BP2NC_TEST     "Enable testing of BP to NetCDF conversion"    ON)
 
 # Set a variable that appears in the pio_config.h.in file.
 if(PIO_USE_MALLOC)

@@ -1078,6 +1078,7 @@ extern "C" {
     int PIOc_sync(int ncid);
     int PIOc_deletefile(int iosysid, const char *filename);
     int PIOc_createfile(int iosysid, int *ncidp,  int *iotype, const char *fname, int mode);
+    int PIOc_createfile_orig(int iosysid, int *ncidp,  int *iotype, const char *fname, int mode);
     int PIOc_create(int iosysid, const char *path, int cmode, int *ncidp);
     int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *fname, int mode);
     int PIOc_openfile2(int iosysid, int *ncidp, int *iotype, const char *fname, int mode);
